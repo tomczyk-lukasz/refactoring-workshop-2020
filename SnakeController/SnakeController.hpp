@@ -11,6 +11,7 @@ class IPort;
 
 namespace Snake
 {
+    
 struct ConfigurationError : std::logic_error
 {
     ConfigurationError();
@@ -23,13 +24,18 @@ struct UnexpectedEventException : std::runtime_error
 
 class Controller : public IEventHandler
 {
+    struct Segment;
 public:
     Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config);
 
     Controller(Controller const& p_rhs) = delete;
     Controller& operator=(Controller const& p_rhs) = delete;
 
+    void moveSnake(Segment& newHead);
+    void scoreAndMove(Segment& newHead, bool& lost);
     void receive(std::unique_ptr<Event> e) override;
+
+    
 
 private:
     struct Segment

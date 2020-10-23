@@ -6,6 +6,7 @@
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
+#include "MapManager.hpp"
 
 class Event;
 class IPort;
@@ -36,9 +37,9 @@ private:
     IPort& m_displayPort;
     IPort& m_foodPort;
     IPort& m_scorePort;
-
-    std::pair<int, int> m_mapDimension;
-    std::pair<int, int> m_foodPosition;
+    
+    MapManager mapMan;
+    
 
     struct Segment
     {

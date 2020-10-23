@@ -63,7 +63,7 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
-void Controller::handleTimePassed(const TimeoutInd&)
+void Controller::handleTimePassed(const Ind&)
 {
     Segment newHead = getNewHead();
 
@@ -97,7 +97,7 @@ void Controller::handleTimePassed(const TimeoutInd&)
     cleanNotExistingSnakeSegments();
 }
 
-void Controller::handleDirectionChange(const DirectionInd& directionInd)
+void Controller::handleDirectionChange(const Ind& directionInd)
 {
     auto direction = directionInd.direction;
 
@@ -106,7 +106,7 @@ void Controller::handleDirectionChange(const DirectionInd& directionInd)
     }
 }
 
-void Controller::handleFoodPositionChange(const FoodInd& receivedFood)
+void Controller::handleFoodPositionChange(const Ind& receivedFood)
 {
     bool requestedFoodCollidedWithSnake = false;
     for (auto const& segment : m_segments) {
@@ -216,16 +216,16 @@ Controller::Segment Controller::getNewHead() const
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
-        handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
+        handleTimePassed(*static_cast<EventT<TimeoutInd> const&>(*e));
     } catch (std::bad_cast&) {
         try {
-            handleDirectionChange(*dynamic_cast<EventT<DirectionInd> const&>(*e));
+            handleDirectionChange(*static_cast<EventT<DirectionInd> const&>(*e));
         } catch (std::bad_cast&) {
             try {
-                handleFoodPositionChange(*dynamic_cast<EventT<FoodInd> const&>(*e));
+                handleFoodPositionChange(*static_cast<EventT<FoodInd> const&>(*e));
             } catch (std::bad_cast&) {
                 try {
-                    handleNewFood(*dynamic_cast<EventT<FoodResp> const&>(*e));
+                    handleNewFood(*static_cast<EventT<FoodResp> const&>(*e));
                 } catch (std::bad_cast&) {
                     throw UnexpectedEventException();
                 }

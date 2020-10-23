@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-
+#include "../DynamicEvents/EventT.hpp"
 namespace Snake
 {
 
@@ -12,8 +12,14 @@ enum Direction
     Direction_LEFT  = 0b01,
     Direction_RIGHT = 0b11
 };
+struct Ind{
+protected:
+    static constexpr std::uint32_t MESSAGE_ID = 0x00;
+    
+};
 
-struct DirectionInd
+
+struct DirectionInd: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x10;
 
@@ -21,7 +27,7 @@ struct DirectionInd
 };
 
 
-struct TimeoutInd
+struct TimeoutInd: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x20;
 };
@@ -33,7 +39,7 @@ enum Cell
     Cell_SNAKE
 };
 
-struct DisplayInd
+struct DisplayInd: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x30;
 
@@ -42,7 +48,7 @@ struct DisplayInd
     Cell value;
 };
 
-struct FoodInd
+struct FoodInd: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x40;
 
@@ -50,12 +56,12 @@ struct FoodInd
     int y;
 };
 
-struct FoodReq
+struct FoodReq: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x41;
 };
 
-struct FoodResp
+struct FoodResp: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x42;
 
@@ -63,12 +69,12 @@ struct FoodResp
     int y;
 };
 
-struct ScoreInd
+struct ScoreInd: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x70;
 };
 
-struct LooseInd
+struct LooseInd: public Ind
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x71;
 };

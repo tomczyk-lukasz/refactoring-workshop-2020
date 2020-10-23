@@ -54,7 +54,7 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
 
         while (length--) {
             Segment seg;
-            istr >> seg.x >> seg.y;
+            istr >> seg.positionXY.first >> seg.positionXY.second;
             m_segments.push_back(seg);
         }
     } else {
@@ -65,7 +65,7 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
 bool Controller::isSegmentAtPosition(int x, int y) const
 {
     return m_segments.end() !=  std::find_if(m_segments.cbegin(), m_segments.cend(),
-        [x, y](auto const& segment){ return segment.x == x and segment.y == y; });
+        [x, y](auto const& segment){ return segment.positionXY.first == x and segment.positionXY.second == y; });
 }
 
 bool Controller::isPositionOutsideMap(int x, int y) const
@@ -124,8 +124,8 @@ Controller::Segment Controller::calculateNewHead() const
     Segment const& currentHead = m_segments.front();
 
     Segment newHead;
-    newHead.x = currentHead.x + (isHorizontal(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
-    newHead.y = currentHead.y + (isVertical(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
+    newHead.positionXY.first = currentHead.positionXY.first + (isHorizontal(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
+    newHead.positionXY.second = currentHead.positionXY.second + (isVertical(m_currentDirection) ? isPositive(m_currentDirection) ? 1 : -1 : 0);
 
     return newHead;
 }
@@ -135,8 +135,8 @@ void Controller::removeTailSegment()
     auto tail = m_segments.back();
 
     DisplayInd l_evt;
-    l_evt.x = tail.x;
-    l_evt.y = tail.y;
+    l_evt.x = tail.positionXY.first;
+    l_evt.y = tail.positionXY.second;
     l_evt.value = Cell_FREE;
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
 
@@ -148,8 +148,8 @@ void Controller::addHeadSegment(Segment const& newHead)
     m_segments.push_front(newHead);
 
     DisplayInd placeNewHead;
-    placeNewHead.x = newHead.x;
-    placeNewHead.y = newHead.y;
+    placeNewHead.x = newHead.positionXY.first;
+    placeNewHead.y = newHead.positionXY.second;
     placeNewHead.value = Cell_SNAKE;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
@@ -157,7 +157,7 @@ void Controller::addHeadSegment(Segment const& newHead)
 
 void Controller::removeTailSegmentIfNotScored(Segment const& newHead)
 {
-    if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
+    if (std::make_pair(newHead.positionXY.first, newHead.positionXY.second) == m_foodPosition) {
         m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
     } else {
@@ -167,7 +167,7 @@ void Controller::removeTailSegmentIfNotScored(Segment const& newHead)
 
 void Controller::updateSegmentsIfSuccessfullMove(Segment const& newHead)
 {
-    if (isSegmentAtPosition(newHead.x, newHead.y) or isPositionOutsideMap(newHead.x, newHead.y)) {
+    if (isSegmentAtPosition(newHead.positionXY.first, newHead.positionXY.second) or isPositionOutsideMap(newHead.positionXY.first, newHead.positionXY.second)) {
         m_scorePort.send(std::make_unique<EventT<LooseInd>>());
     } else {
         addHeadSegment(newHead);

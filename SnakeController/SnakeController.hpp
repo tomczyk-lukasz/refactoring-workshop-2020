@@ -42,8 +42,7 @@ private:
 
     struct Segment
     {
-        int x;
-        int y;
+        std::pair<int, int> positionXY;
     };
 
     std::list<Segment> m_segments;
